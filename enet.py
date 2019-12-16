@@ -246,11 +246,16 @@ class Light(BaseEnetDevice):
     def get_value(self):
         output_function = self._raw['deviceChannelConfigurationGroups'][1][ 'deviceChannels'][0]['outputDeviceFunctions'][1]["uid"]
         current_value = self.client.get_current_values(output_function)
-        return current_value["currentValues"][0]["value"]
+        value = current_value["currentValues"][0]["value"]
+        print("get_value() returning ", value)
+        self._last_value = value
+        return value
 
 
     def set_value(self, value):
         input_function = self._raw["deviceChannelConfigurationGroups"][1]["deviceChannels"][0]['inputDeviceFunctions'][2]["uid"]
+        print("set_value({})".format(value))
+        #self._last_value = value
         self.client.set_value(input_function, value)
 
     def turn_off(self):

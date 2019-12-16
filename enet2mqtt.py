@@ -1,45 +1,100 @@
-import paho.mqtt.subscribe as subscribe
+import paho.mqtt.client as mqtt
 import enet
 import json
 
+import time
 
-def loop(devices):
-    topic_device_map = {"enet/{}/set".format(device.uid):device for device in devices}
-    topics = [(topic, 1) for topic in topic_device_map.keys()]
-    print(topics)
-    while True:
-        print("Subscribing...")
+class MqttEnetLight(enet.Light):
+    def handle_mqtt_set(self, cmd):
 
-        msg = subscribe.simple(topics, hostname="192.168.1.111")
-        print("%s %s" % (msg.topic, msg.payload))
-        device = topic_device_map.get(msg.topic)
-        msg = json.loads(msg.payload)
-        if "brightness" in msg:
-            device.set_value(msg["brightness"])
-        elif "state" in msg and msg["state"] == "OFF":
-            device.turn_off()
-            
+        brightness = cmd.get("brightness")
+        state = cmd.get("state")
+        if state == "ON":
+            if brightness is not None:
+                self.set_value(brightness)
+            else:
+                self.set_value(self._last_value)
+        elif state == "OFF":
+            self.turn_off()
+            brightness = 0
+        return self.get_mqtt_state(brightness)
 
-def print_yaml(devices):
-    values = []
-    template = """  - platform: mqtt
-    schema: json
-    command_topic: "enet/%s/set"
-    state_topic: "enet/%s/state"
-    name: %s:%s
-    brightness: true
-    brightness_scale: 100"""
-    for device in devices:
-        if device.__class__.__name__ == "Light":
-            values.append((template % (device.uid, device.uid, device.location,  device.name)))
-    return values
+    def get_mqtt_state(self, value=None):
+        if value is None:
+            value = self.get_value()
+        state = dict(state="OFF" if value == 0 else "ON",
+                     brightness=value)
+        return json.dumps(state)
+
+enet.Light = MqttEnetLight
+
+class Enet2MqttBridge(mqtt.Client):
+    def __init__(self, enet_client):
+        super().__init__()
+        self.enet = enet_client
+        self.device_map = {}
+        self.enet_connect()
+        self.enet_poll_interval = 30
+
+    def enet_connect(self):
+        self.enet.get_account()
+        self.enet.simple_login()
+        self.enet.get_account()
+        self.devices = [d for d in self.enet.get_devices() if type(d) is MqttEnetLight]
+        self.device_map = {device.uid:device for device in self.devices}
+
+    def on_connect(self, mqttc, obj, flags, rc):
+        print("rc: "+str(rc))
+
+    def on_message(self, mqttc, obj, msg):
+        print(msg.topic+" "+str(msg.qos)+" "+str(msg.payload))
+        prefix, device_uid, command = msg.topic.split("/")
+        if command == "set":
+            device = self.device_map.get(device_uid)
+            if not device:
+                print("Unknown device uid: ", device_uid)
+                return
+            payload = json.loads(msg.payload)
+            state = device.handle_mqtt_set(payload)
+            self.publish("enet/{}/state".format(device_uid), state)
+        else:
+            print("Unknown command")
+
+    def on_publish(self, mqttc, obj, mid):
+        pass
+        #print("mid: "+str(mid))
+
+    def on_subscribe(self, mqttc, obj, mid, granted_qos):
+        print("Subscribed: "+str(mid)+" "+str(granted_qos))
+
+    def on_log(self, mqttc, obj, level, string):
+        print("LOG: ", string)
+        pass
+
+    def run(self):
+        self.connect("192.168.1.111", 1883, 60)
+        self.subscribe("enet/+/set", 0)
+
+        self.loop_start()
+        self.poll_enet()
         
 
+    def poll_enet(self):
+        published_state = {}
+        while True:
+            print("Polling enet devices...")
+            for device in self.device_map.values():
+                state = device.get_mqtt_state()
+                topic = "enet/{}/state".format(device.uid)
+                
+                if published_state.get(topic) != state:
+                    self.publish(topic, state)
+                    published_state[topic] = state
+            time.sleep(self.enet_poll_interval)
 
 if __name__ == "__main__":
-    e = enet.EnetClient(enet.user, enet.passwd, enet.host)
-    e.get_account()
-    e.simple_login()
-    e.get_account()
-    devices = e.get_devices()
-    loop(devices)
+    enet_client = enet.EnetClient(enet.user, enet.passwd, enet.host)
+
+    bridge = Enet2MqttBridge(enet_client)
+    rc = bridge.run()
+    print("rc: "+str(rc))
