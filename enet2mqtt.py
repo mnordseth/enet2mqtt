@@ -5,6 +5,16 @@ import json
 import time
 
 class MqttEnetLight(enet.Light):
+    def get_ha_mqtt_config(self):
+        config = dict(name="{}:{}".format(self.location, self.name),
+                     brightness=True,
+                     schema="json",
+                     platform="mqtt",
+                     brightness_scale=100,
+                     command_topic="enet/{}/set".format(self.uid),
+                     state_topic="enet/{}/state".format(self.uid))
+        return json.dumps(config)
+
     def handle_mqtt_set(self, cmd):
 
         brightness = cmd.get("brightness")
@@ -56,7 +66,7 @@ class Enet2MqttBridge(mqtt.Client):
                 return
             payload = json.loads(msg.payload)
             state = device.handle_mqtt_set(payload)
-            self.publish("enet/{}/state".format(device_uid), state)
+            self.publish("enet/{}/state".format(device_uid), state, retain=True)
         else:
             print("Unknown command")
 
@@ -76,8 +86,15 @@ class Enet2MqttBridge(mqtt.Client):
         self.subscribe("enet/+/set", 0)
 
         self.loop_start()
+        self.ha_autodiscover()
         self.poll_enet()
         
+    def ha_autodiscover(self):
+        for device in self.device_map.values():
+            config = device.get_ha_mqtt_config()
+            topic = "{}/light/{}/config".format("homeassistant", device.uid)
+            print("Autoconfigure: ", topic, config)
+            self.publish(topic, config)
 
     def poll_enet(self):
         published_state = {}
@@ -88,7 +105,7 @@ class Enet2MqttBridge(mqtt.Client):
                 topic = "enet/{}/state".format(device.uid)
                 
                 if published_state.get(topic) != state:
-                    self.publish(topic, state)
+                    self.publish(topic, state, retain=True)
                     published_state[topic] = state
             time.sleep(self.enet_poll_interval)
 
@@ -97,4 +114,4 @@ if __name__ == "__main__":
 
     bridge = Enet2MqttBridge(enet_client)
     rc = bridge.run()
-    print("rc: "+str(rc))
+    #print("rc: "+str(rc))
