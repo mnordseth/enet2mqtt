@@ -6,7 +6,9 @@ import pprint
 import string
 import random
 import json
+import logging
 
+log = logging.getLogger(__name__)
 
 session = requests.Session()
 user = "admin"
@@ -44,7 +46,7 @@ class EnetClient:
         #response = requests.post("http://%s%s" % (self.hostname, url), json=req, headers=headers)
 
         if response.status_code >= 400:
-            print("Request to %s failed with status %s" % (response.request.url, response.status_code))
+            log.warning(f"Request to {response.request.url} failed with status {response.status_code}")
             return response
         log=dict(request=dict(url=response.request.url,
                               headers=dict(response.request.headers),
@@ -187,7 +189,7 @@ class EnetClient:
 
     def get_events(self):
         result = self.request(URL_VIZ, "requestEvents")
-        print(result)
+        log.debug("get_events(): ", result)
     
     def foo(self):
         self.request(URL_VIZ, "getMigratingProjectUID")
@@ -223,7 +225,7 @@ def Device(client, raw):
     elif device_type in ['DVT_WS2BJF50CL', 'DVT_WS3BJF50', 'DVT_WS3BJF50CL', 'DVT_WS4BJF50CL']:
         return Switch(client, raw)
     else:
-        print("Unknown device: typeID=%s name=%s" % (raw["typeID", raw["installationArea"]]))
+        log.warning(f'Unknown device: typeID={raw["typeID"]} name={raw["installationArea"]}')
 
 
 class BaseEnetDevice:
@@ -247,15 +249,14 @@ class Light(BaseEnetDevice):
         output_function = self._raw['deviceChannelConfigurationGroups'][1][ 'deviceChannels'][0]['outputDeviceFunctions'][1]["uid"]
         current_value = self.client.get_current_values(output_function)
         value = current_value["currentValues"][0]["value"]
-        print("get_value() returning ", value)
+        log.debug(f"{self.name} get_value() returned {value}")
         self._last_value = value
         return value
 
 
     def set_value(self, value):
         input_function = self._raw["deviceChannelConfigurationGroups"][1]["deviceChannels"][0]['inputDeviceFunctions'][2]["uid"]
-        print("set_value({})".format(value))
-        #self._last_value = value
+        log.info(f"{self.name} set_value({value})")
         self.client.set_value(input_function, value)
 
     def turn_off(self):
