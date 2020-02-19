@@ -126,7 +126,7 @@ class Enet2MqttBridge(mqtt.Client):
             time.sleep(self.enet_poll_interval)
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG,
+    logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
     enet_client = enet.EnetClient(enet.user, enet.passwd, enet.host)
 
