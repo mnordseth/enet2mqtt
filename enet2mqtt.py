@@ -6,6 +6,8 @@ import logging
 
 log = logging.getLogger(__name__)
 
+mqtt_server_addr = "localhost"
+mqtt_server_port = 1883
 
 class MqttEnetLight(enet.Light):
     def get_ha_mqtt_config(self):
@@ -68,7 +70,7 @@ class Enet2MqttBridge(mqtt.Client):
 
     def on_message(self, mqttc, obj, msg):
         log.info(f"On message: {msg.topic} {msg.payload}")
-        #print(msg.topic+" "+str(msg.qos)+" "+str(msg.payload))
+
         prefix, device_uid, command = msg.topic.split("/")
         if command == "set":
             device = self.device_map.get(device_uid)
@@ -92,7 +94,7 @@ class Enet2MqttBridge(mqtt.Client):
         pass
 
     def run(self):
-        self.connect("localhost", 1883, 60)
+        self.connect(mqtt_server_addr, mqtt_server_port, 60)
         self.subscribe("enet/+/set", 0)
 
         self.loop_start()

@@ -40,10 +40,6 @@ class EnetClient:
         }
         self._api_counter += 1
         response = self._session.post("http://%s%s" % (self.hostname, url), json=req)
-        #headers = {}
-        #if self._cookie:
-        #    headers["Cookie"] = "INSTASESSIONID=%s" % self._cookie
-        #response = requests.post("http://%s%s" % (self.hostname, url), json=req, headers=headers)
 
         if response.status_code >= 400:
             log.warning(f"Request to {response.request.url} failed with status {response.status_code}")
