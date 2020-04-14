@@ -6,8 +6,11 @@ import logging
 
 log = logging.getLogger(__name__)
 
-mqtt_server_addr = "localhost"
-mqtt_server_port = 1883
+mqtt_host = "localhost"
+mqtt_port = 1883
+enet_host = "192.168.1.115"
+enet_user = "admin"
+enet_passwd = "admin"
 
 class MqttEnetLight(enet.Light):
     def get_ha_mqtt_config(self):
@@ -94,7 +97,7 @@ class Enet2MqttBridge(mqtt.Client):
         pass
 
     def run(self):
-        self.connect(mqtt_server_addr, mqtt_server_port, 60)
+        self.connect(mqtt_host, mqtt_port, 60)
         self.subscribe("enet/+/set", 0)
 
         self.loop_start()
@@ -130,7 +133,7 @@ class Enet2MqttBridge(mqtt.Client):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
-    enet_client = enet.EnetClient(enet.user, enet.passwd, enet.host)
+    enet_client = enet.EnetClient(enet_user, enet_passwd, enet_host)
 
     bridge = Enet2MqttBridge(enet_client)
     rc = bridge.run()
