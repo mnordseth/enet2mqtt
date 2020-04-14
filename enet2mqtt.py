@@ -65,7 +65,12 @@ class Enet2MqttBridge(mqtt.Client):
         self.enet.get_account()
         self.enet.simple_login()
         self.enet.get_account()
-        self.devices = [d for d in self.enet.get_devices() if type(d) is MqttEnetLight]
+        enet_devices = self.enet.get_devices()
+        # Dump raw devices to file
+        with open("devices.json", "w") as fp:
+            json.dump([d._raw for d in enet_devices], fp, indent=2)
+            print("Dumped all device info to devices.json")
+        self.devices = [d for d in enet_devices if type(d) is MqttEnetLight]
         self.device_map = {device.uid:device for device in self.devices}
 
     def on_connect(self, mqttc, obj, flags, rc):

@@ -214,11 +214,20 @@ class EnetClient:
         recurse_locations(locations)
         return device_to_loc
 
+
+known_actuators = ["DVT_DA1M",  # Jung 1 channel dimming actuator
+                   "DVT_SV1M",  # Jung 1 channel 1-10V dimming actuator
+                   "DVT_DA4R",  # 4 channel dimming actuator rail mount
+                   "DVT_DA1R",  # 1 channel dimming actuator rail mount
+                   "DVT_SJAR"] # 8 channel switch actuator
+
+known_sensors = ['DVT_WS2BJF50CL', 'DVT_WS3BJF50', 'DVT_WS3BJF50CL', 'DVT_WS4BJF50CL']
+
 def Device(client, raw):
     device_type = raw["typeID"]
-    if device_type in ["DVT_DA1M", "DVT_SV1M"]:
+    if device_type in known_actuators:
         return Light(client, raw)
-    elif device_type in ['DVT_WS2BJF50CL', 'DVT_WS3BJF50', 'DVT_WS3BJF50CL', 'DVT_WS4BJF50CL']:
+    elif device_type in known_sensors:
         return Switch(client, raw)
     else:
         log.warning(f'Unknown device: typeID={raw["typeID"]} name={raw["installationArea"]}')
