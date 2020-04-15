@@ -8,6 +8,9 @@ log = logging.getLogger(__name__)
 
 mqtt_host = "localhost"
 mqtt_port = 1883
+mqtt_user = ""
+mqtt_passwd = ""
+
 enet_host = "192.168.1.115"
 enet_user = "admin"
 enet_passwd = "admin"
@@ -102,6 +105,7 @@ class Enet2MqttBridge(mqtt.Client):
         pass
 
     def run(self):
+        self.username_pw_set(mqtt_user, mqtt_passwd)
         self.connect(mqtt_host, mqtt_port, 60)
         self.subscribe("enet/+/set", 0)
 

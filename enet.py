@@ -215,6 +215,9 @@ class EnetClient:
         return device_to_loc
 
 
+
+
+                
 known_actuators = ["DVT_DA1M",  # Jung 1 channel dimming actuator
                    "DVT_SV1M",  # Jung 1 channel 1-10V dimming actuator
                    "DVT_DA4R",  # 4 channel dimming actuator rail mount
@@ -250,6 +253,11 @@ class Switch(BaseEnetDevice):
     pass
 
 class Light(BaseEnetDevice):
+    def __init__(self, client, raw):
+        super().__init__(client, raw)
+        self.log_channel_info()
+        
+            
     def get_value(self):
         output_function = self._raw['deviceChannelConfigurationGroups'][1][ 'deviceChannels'][0]['outputDeviceFunctions'][1]["uid"]
         current_value = self.client.get_current_values(output_function)
@@ -258,6 +266,15 @@ class Light(BaseEnetDevice):
         self._last_value = value
         return value
 
+    def log_channel_info(self):
+        print(f"Enet Device {self.name} type {self.device_type} has the following channels:")
+        for ccg, channel_config_group in enumerate(self._raw['deviceChannelConfigurationGroups']):
+            for dc, device_channel in enumerate(channel_config_group["deviceChannels"]):
+                print(f"  ccg: {ccg} dc: {dc} Channel type: {device_channel['channelTypeID']} area: {device_channel['effectArea']}")
+                for odf, output_func in enumerate(device_channel["outputDeviceFunctions"]):
+                    type_id = output_func['currentValues'][0]['valueTypeID']
+                    value = output_func['currentValues'][0]['value']
+                    print(f"    odf: {odf} type: {type_id} value: {value}")
 
     def set_value(self, value):
         input_function = self._raw["deviceChannelConfigurationGroups"][1]["deviceChannels"][0]['inputDeviceFunctions'][2]["uid"]
