@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 session = requests.Session()
 user = "admin"
 passwd = "admin"
-host = "192.168.1.115"
+host = "10.0.0.102"
 
 URL_MANAGEMENT="/jsonrpc/management"
 URL_VIZ="/jsonrpc/visualization"
@@ -172,6 +172,7 @@ class EnetClient:
                              "value":value}]
         }
         result = self.request(URL_VIZ, "callInputDeviceFunction", params)
+        log.debug("set_value(): " + result)
 
     def set_device_name_value(self, device_name, value):
         # get device_function_uid from device
@@ -185,7 +186,7 @@ class EnetClient:
 
     def get_events(self):
         result = self.request(URL_VIZ, "requestEvents")
-        log.debug("get_events(): ", result)
+        log.debug("get_events(): " +  result)
     
     def foo(self):
         self.request(URL_VIZ, "getMigratingProjectUID")
@@ -222,15 +223,22 @@ known_actuators = ["DVT_DA1M",  # Jung 1 channel dimming actuator
                    "DVT_SV1M",  # Jung 1 channel 1-10V dimming actuator
                    "DVT_DA4R",  # 4 channel dimming actuator rail mount
                    "DVT_DA1R",  # 1 channel dimming actuator rail mount
-                   "DVT_SJAR"] # 8 channel switch actuator
+                   "DVT_SJAR"]  # 8 channel switch actuator
 
-known_sensors = ['DVT_WS2BJF50CL', 'DVT_WS3BJF50', 'DVT_WS3BJF50CL', 'DVT_WS4BJF50CL']
+known_sensors = ['DVT_WS2BJF50CL', 
+                 'DVT_WS3BJF50', 
+                 'DVT_WS3BJF50CL', 
+                 'DVT_WS4BJF50CL',
+                 'DVT_BS1BP', # eNet motion detector
+                 'DVT_WS4BJ'] # eNet radio transmitter module 4-gang
 
 def Device(client, raw):
     device_type = raw["typeID"]
     if device_type in known_actuators:
+        print("Actuator added: " + raw["typeID"])
         return Light(client, raw)
     elif device_type in known_sensors:
+        print("Sensor added: " + raw["typeID"])
         return Switch(client, raw)
     else:
         log.warning(f'Unknown device: typeID={raw["typeID"]} name={raw["installationArea"]}')

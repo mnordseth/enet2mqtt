@@ -6,18 +6,19 @@ import logging
 
 log = logging.getLogger(__name__)
 
-mqtt_host = "localhost"
+mqtt_host = "10.0.0.3"
 mqtt_port = 1883
 mqtt_user = ""
 mqtt_passwd = ""
 
-enet_host = "192.168.1.115"
+enet_host = "10.0.0.102"
 enet_user = "admin"
 enet_passwd = "admin"
 
 class MqttEnetLight(enet.Light):
     def get_ha_mqtt_config(self):
         name="{}:{}".format(self.location.replace("My home:", ""), self.name)
+
         config = dict(name=name,
                       unique_id=self.uid,
                       brightness=True,
@@ -101,7 +102,6 @@ class Enet2MqttBridge(mqtt.Client):
         log.debug(f"Subscribed: {mid} {granted_qos}")
 
     def on_log(self, mqttc, obj, level, string):
-        #print("LOG: ", string)
         pass
 
     def run(self):
@@ -119,6 +119,7 @@ class Enet2MqttBridge(mqtt.Client):
             topic = "{}/light/{}/config".format("homeassistant", device.uid)
             log.debug(f"HA Autoconfigure: {topic} {config}")
             self.publish(topic, config, retain=True)
+            
             #self.publish(topic, "")
 
     def poll_enet(self):
@@ -140,9 +141,9 @@ class Enet2MqttBridge(mqtt.Client):
             time.sleep(self.enet_poll_interval)
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+    
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
+    
     enet_client = enet.EnetClient(enet_user, enet_passwd, enet_host)
-
     bridge = Enet2MqttBridge(enet_client)
     rc = bridge.run()
