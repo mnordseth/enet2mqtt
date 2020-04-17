@@ -6,7 +6,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-mqtt_host = "10.0.0.3"
+mqtt_host = "localhost"
 mqtt_port = 1883
 mqtt_user = ""
 mqtt_passwd = ""
