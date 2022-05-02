@@ -4,24 +4,27 @@ Python library for communicating with the Gira / Jung eNet Smart Home Server (ht
 
 
 ## Installation
+### Requirements
+
+ 1. You have a mqtt broker. (Like mosquitto.)
+ 2. You have Home Assistant running.
+ 3. You know how to use docker.
+ 
+### The installation 
 First, you need to make a docker image. 
-- Enter the correct information in the `start.sh`.
-	- `./usr/local/bin/python3.7 enet2mqtt.py --enet_user [ENTER USERNAME] --enet_passwd [ENTER PASSWORD]  [IP ENET SERVER] 127.0.0.1`
-	[ENTER USERNAME] = the username to log in to the Enet app.
-	[ENTER PASSWORD] = the password to log in to the Enet app.
-	[IP ENET SERVER] = the IP from the Enet server. You can find it in the Enet app, in the menu `Connected with  xxx.xxx.xx.xx` and here is xxx.xxx.xx.xx the IP
-	Example: `./usr/local/bin/python3.7 enet2mqtt.py --enet_user admin --enet_passwd password01 192.168.1.32 127.0.0.1`
-- Then create the docker image: `sudo docker build -t enet2mqtt-slim .`
+
+ - create the docker image: `sudo docker build -t enet2mqtt .`
 
 Now that you have the docker image, you can create the docker container
 
-    sudo docker run -d -p 1883:1883 --name enet2mqtt enet2mqtt-slim
+    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] --name enet2mqtt enet2mqtt
 
-We need to connect HA to our bridge.
-- Go to `Devices & Services`
-- `Add integration`
-- `MQTT`
-- Now enter your IP from the server where you are hosting the docker container. And enter as port `1883`.
+ - [ENET_USER] = Your enet username
+ - [ENET_PASSWORD] = Your enet password
+ - [MQTT_USER] = your mqtt username of your broker
+ - [MQTT_PASSWORD] = your mqtt password of your broker
+ - [ENET_IP] = your enet server IP
+ - [MQTT_BROKER_IP] = your mqtt broker IP
 
 That is it!
 
