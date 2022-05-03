@@ -32,12 +32,10 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt:${{ steps.date.outputs.date }} , ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt:latest
-      - 
-        name: Sync
-        uses: ms-jpq/sync-dockerhub-readme@v1
+      -
+        uses: meeDamian/sync-readme@v1.0.6
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt
-          readme: "./README.md"
-
+          user: ${{ secrets.DOCKERHUB_USERNAME }}
+          pass: ${{ secrets.DOCKERHUB_TOKEN }}
+          slug: ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt
+          description: Python library for communicating with the Gira / Jung eNet Smart Home Server (https://www.enet-smarthome.com/), and a mqtt forwarder to integrate eNet Smart Home devices with Home Assistant.
