@@ -219,6 +219,11 @@ known_actuators = ["DVT_DA1M",  # Jung 1 channel dimming actuator
 
 known_sensors = ['DVT_WS2BJF50CL', 
                  'DVT_WS3BJF50', 
+                 'DVT_US2M',
+                 'DVT_WS1BG',
+                 'DVT_SA1M',
+                 'DVT_WS3BG',
+                 'DVT_RPZS',
                  'DVT_WS3BJF50CL', 
                  'DVT_WS4BJF50CL', #
                  'DVT_BS1BP', # eNet motion detector
