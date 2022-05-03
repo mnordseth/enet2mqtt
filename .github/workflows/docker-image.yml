@@ -33,9 +33,9 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt:${{ steps.date.outputs.date }} , ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt:latest
       -
-        uses: meeDamian/sync-readme@v1.0.6
+        name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v3
         with:
-          user: ${{ secrets.DOCKERHUB_USERNAME }}
-          pass: ${{ secrets.DOCKERHUB_TOKEN }}
-          slug: ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt
-          description: Python library for communicating with the Gira / Jung eNet Smart Home Server (https://www.enet-smarthome.com/), and a mqtt forwarder to integrate eNet Smart Home devices with Home Assistant.
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt
