@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>Enet2Mqtt</Name>
+  <Repository>th0masdb14/enet2mqtt</Repository>
+  <Registry>https://hub.docker.com/repository/docker/th0masdb14/enet2mqtt</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support/>
+  <Project>https://github.com/mnordseth/enet2mqtt</Project>
+  <Overview># Enet2mqtt&#xD;
+Python library for communicating with the Gira / Jung eNet Smart Home Server (https://www.enet-smarthome.com/), and a mqtt forwarder to integrate eNet Smart Home devices with Home Assistant.&#xD;
+&#xD;
+&#xD;
+## Installation&#xD;
+### Requirements&#xD;
+&#xD;
+ 1. You have a mqtt broker. (Like mosquitto.)&#xD;
+ 2. You have Home Assistant running.&#xD;
+ 3. You know how to use docker.&#xD;
+ &#xD;
+### The installation &#xD;
+First, you need to make a docker image. &#xD;
+&#xD;
+ - create the docker image: `sudo docker build -t enet2mqtt .`&#xD;
+&#xD;
+Now that you have the docker image, you can create the docker container&#xD;
+&#xD;
+    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] --name enet2mqtt enet2mqtt&#xD;
+&#xD;
+ - [ENET_USER] = Your enet username&#xD;
+ - [ENET_PASSWORD] = Your enet password&#xD;
+ - [MQTT_USER] = your mqtt username of your broker&#xD;
+ - [MQTT_PASSWORD] = your mqtt password of your broker&#xD;
+ - [ENET_IP] = your enet server IP&#xD;
+ - [MQTT_BROKER_IP] = your mqtt broker IP&#xD;
+&#xD;
+That is it!&#xD;
+&#xD;
+&#xD;
+&#xD;
+## Support&#xD;
+You always can make an issue there. But also take a look here [https://community.home-assistant.io/t/home-assistant-control-google-assistant-devices/164931/41](https://community.home-assistant.io/t/home-assistant-control-google-assistant-devices/164931/41)!&#xD;
+&#xD;
+## Roadmap&#xD;
+- Make a HACS plugin.&#xD;
+</Overview>
+  <Category>HomeAutomation:</Category>
+  <WebUI/>
+  <TemplateURL/>
+  <Icon>https://raw.githubusercontent.com/SebastianSchultz/ioBroker.enet/HEAD/admin/enet.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled>1651576754</DateInstalled>
+  <DonateText/>
+  <DonateLink/>
+  <Description># Enet2mqtt&#xD;
+Python library for communicating with the Gira / Jung eNet Smart Home Server (https://www.enet-smarthome.com/), and a mqtt forwarder to integrate eNet Smart Home devices with Home Assistant.&#xD;
+&#xD;
+&#xD;
+## Installation&#xD;
+### Requirements&#xD;
+&#xD;
+ 1. You have a mqtt broker. (Like mosquitto.)&#xD;
+ 2. You have Home Assistant running.&#xD;
+ 3. You know how to use docker.&#xD;
+ &#xD;
+### The installation &#xD;
+First, you need to make a docker image. &#xD;
+&#xD;
+ - create the docker image: `sudo docker build -t enet2mqtt .`&#xD;
+&#xD;
+Now that you have the docker image, you can create the docker container&#xD;
+&#xD;
+    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] --name enet2mqtt enet2mqtt&#xD;
+&#xD;
+ - [ENET_USER] = Your enet username&#xD;
+ - [ENET_PASSWORD] = Your enet password&#xD;
+ - [MQTT_USER] = your mqtt username of your broker&#xD;
+ - [MQTT_PASSWORD] = your mqtt password of your broker&#xD;
+ - [ENET_IP] = your enet server IP&#xD;
+ - [MQTT_BROKER_IP] = your mqtt broker IP&#xD;
+&#xD;
+That is it!&#xD;
+&#xD;
+&#xD;
+&#xD;
+## Support&#xD;
+You always can make an issue there. But also take a look here [https://community.home-assistant.io/t/home-assistant-control-google-assistant-devices/164931/41](https://community.home-assistant.io/t/home-assistant-control-google-assistant-devices/164931/41)!&#xD;
+&#xD;
+## Roadmap&#xD;
+- Make a HACS plugin.&#xD;
+</Description>
+  <Networking>
+    <Mode>bridge</Mode>
+    <Publish/>
+  </Networking>
+  <Data>
+    <Volume>
+      <HostDir/>
+      <ContainerDir>mqtt_ip</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+  </Data>
+  <Environment>
+    <Variable>
+      <Value/>
+      <Name>enet_ip</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>enet_user</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>enet_pass</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>mqtt_user</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value/>
+      <Name>mqtt_pass</Name>
+      <Mode/>
+    </Variable>
+  </Environment>
+  <Labels/>
+  <Config Name="Enet IP" Target="enet_ip" Default="" Mode="" Description="Container Variable: enet_ip" Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="Enet username" Target="enet_user" Default="" Mode="" Description="Container Variable: enet_user" Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="Enet user password" Target="enet_pass" Default="" Mode="" Description="Container Variable: enet_pass" Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="MQTT IP" Target="mqtt_ip" Default="" Mode="rw" Description="Container Path: mqtt_ip" Type="Path" Display="always" Required="true" Mask="false"/>
+  <Config Name="MQTT username" Target="mqtt_user" Default="" Mode="" Description="Container Variable: mqtt_user" Type="Variable" Display="always" Required="true" Mask="false"/>
+  <Config Name="MQTT user password" Target="mqtt_pass" Default="" Mode="" Description="Container Variable: mqtt_pass" Type="Variable" Display="always" Required="true" Mask="false"/>
+</Container>
