@@ -32,3 +32,12 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt:${{ steps.date.outputs.date }} , ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt:latest
+      - 
+        name: Sync
+        uses: ms-jpq/sync-dockerhub-readme@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/enet2mqtt
+          readme: "./README.md"
+
