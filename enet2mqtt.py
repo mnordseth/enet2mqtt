@@ -149,7 +149,7 @@ def parseargs():
     parser.add_argument('--enet_user', default="admin")
     parser.add_argument('--enet_passwd', default="admin")
     parser.add_argument('mqtt_host', help='MQTT Server address')
-    parser.add_argument('--mqtt_port', default=1883)
+    parser.add_argument('--mqtt_port', type=int, default=1883)
     parser.add_argument('--mqtt_user', default="")
     parser.add_argument('--mqtt_passwd', default="")
 
