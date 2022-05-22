@@ -8,20 +8,21 @@ Python library for communicating with the Gira / Jung eNet Smart Home Server (ht
 
  1. You have a mqtt broker. (Like mosquitto.)
  2. You have Home Assistant running.
- 3. You know how to use docker.
+ 3. You know how to use docker. (or you can run it manually, if you want to, then I also think you know how to do it ;-)
  
 ### The installation 
 You can install it two (three if you have unraid) ways:
 #### 1. From prebuild ([docker hub](https://hub.docker.com/repository/docker/th0masdb14/enet2mqtt))
 You can download the docker image and create the docker container by running this command (replace variables with correct information):
 
-    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] --name enet2mqtt th0masdb14/enet2mqtt:latest
+    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] -e mqtt_port=[MQTT_PORT] --name enet2mqtt th0masdb14/enet2mqtt:latest
  - [ENET_USER] = Your enet username
  - [ENET_PASSWORD] = Your enet password
  - [MQTT_USER] = your mqtt username of your broker
  - [MQTT_PASSWORD] = your mqtt password of your broker
  - [ENET_IP] = your enet server IP
  - [MQTT_BROKER_IP] = your mqtt broker IP
+ - [MQTT_PORT] = your mqtt broker port
  
 That is it!
  
@@ -32,14 +33,14 @@ First, you need to make a docker image.
 
 Now that you have the docker image, you can create the docker container (replace variables with correct information):
 
-    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] --name enet2mqtt enet2mqtt
-
+    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] -e mqtt_port=[MQTT_PORT] --name enet2mqtt th0masdb14/enet2mqtt:latest
  - [ENET_USER] = Your enet username
  - [ENET_PASSWORD] = Your enet password
  - [MQTT_USER] = your mqtt username of your broker
  - [MQTT_PASSWORD] = your mqtt password of your broker
  - [ENET_IP] = your enet server IP
  - [MQTT_BROKER_IP] = your mqtt broker IP
+ - [MQTT_PORT] = your mqtt broker port
  
 That is it!
 
