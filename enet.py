@@ -16,11 +16,12 @@ URL_VIZ="/jsonrpc/visualization"
 URL_COM="/jsonrpc/commissioning"
 
 class EnetClient:
-    def __init__(self, user, passwd, hostname):
+    def __init__(self, user, passwd, hostname, sslverify):
         self.user = user
         self.passwd = passwd
         self.hostname = hostname
         self._session = requests.Session()
+        self._session.verify = sslverify.upper() == "TRUE"
         self._debug_requests = False
         self._api_counter = 1
         self._cookie=""
