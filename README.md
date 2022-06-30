@@ -15,7 +15,7 @@ You can install it two (three if you have unraid) ways:
 #### 1. From prebuild ([docker hub](https://hub.docker.com/repository/docker/th0masdb14/enet2mqtt))
 You can download the docker image and create the docker container by running this command (replace variables with correct information):
 
-    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] -e mqtt_port=[MQTT_PORT] -e verify_ssl_cert=[VERIFY_SSL_CERT] --name enet2mqtt th0masdb14/enet2mqtt:latest
+    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] -e mqtt_port=[MQTT_PORT] -e uri_scheme=[URI_SCHEME] -e verify_ssl_cert=[VERIFY_SSL_CERT] --name enet2mqtt th0masdb14/enet2mqtt:latest
  - [ENET_USER] = Your enet username
  - [ENET_PASSWORD] = Your enet password
  - [MQTT_USER] = your mqtt username of your broker
@@ -23,8 +23,9 @@ You can download the docker image and create the docker container by running thi
  - [ENET_IP] = your enet server IP
  - [MQTT_BROKER_IP] = your mqtt broker IP
  - [MQTT_PORT] = your mqtt broker port
- - [VERIFY_SSL_CERT] = TRUE or FALSE if your enet server has an untrusted HTTPS certificate
- 
+ - [URI_SCHEME] = http or https (defaults to http if not specified)
+ - [VERIFY_SSL_CERT] = TRUE or FALSE if your enet server has an untrusted HTTPS certificate (defaults to TRUE if not specified)
+
 That is it!
  
 #### 2. Or from source
@@ -34,7 +35,7 @@ First, you need to make a docker image.
 
 Now that you have the docker image, you can create the docker container (replace variables with correct information):
 
-    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] -e mqtt_port=[MQTT_PORT] -e verify_ssl_cert=[VERIFY_SSL_CERT] --name enet2mqtt th0masdb14/enet2mqtt:latest
+    sudo docker run -d -e enet_user=[ENET_USER] -e enet_pass=[ENET_PASSWORD] -e mqtt_user=[MQTT_USER] -e mqtt_pass=[MQTT_PASSWORD] -e enet_ip=[ENET_IP] -e mqtt_ip=[MQTT_BROKER_IP] -e mqtt_port=[MQTT_PORT] -e uri_scheme=[URI_SCHEME] -e verify_ssl_cert=[VERIFY_SSL_CERT] --name enet2mqtt th0masdb14/enet2mqtt:latest
  - [ENET_USER] = Your enet username
  - [ENET_PASSWORD] = Your enet password
  - [MQTT_USER] = your mqtt username of your broker
@@ -42,7 +43,8 @@ Now that you have the docker image, you can create the docker container (replace
  - [ENET_IP] = your enet server IP
  - [MQTT_BROKER_IP] = your mqtt broker IP
  - [MQTT_PORT] = your mqtt broker port
- - [VERIFY_SSL_CERT] = TRUE or FALSE if your enet server has an untrusted HTTPS certificate
+ - [URI_SCHEME] = http or https (defaults to http if not specified)
+ - [VERIFY_SSL_CERT] = TRUE or FALSE if your enet server has an untrusted HTTPS certificate (defaults to TRUE if not specified)
  
 That is it!
 
