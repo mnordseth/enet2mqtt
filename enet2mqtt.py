@@ -152,6 +152,7 @@ def parseargs():
     parser.add_argument('--mqtt_port', type=int, default=1883)
     parser.add_argument('--mqtt_user', default="")
     parser.add_argument('--mqtt_passwd', default="")
+    parser.add_argument('--uri_scheme', choices=['http', 'https'], default="http")
     parser.add_argument('--verify_ssl_cert', default="TRUE")
 
     args = parser.parse_args()
@@ -162,6 +163,6 @@ if __name__ == "__main__":
     args = parseargs()
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
     
-    enet_client = enet.EnetClient(args.enet_user, args.enet_passwd, args.enet_host, args.verify_ssl_cert)
+    enet_client = enet.EnetClient(args.enet_user, args.enet_passwd, args.enet_host, args.uri_scheme, args.verify_ssl_cert)
     bridge = Enet2MqttBridge(enet_client, args.mqtt_host, args.mqtt_port, args.mqtt_user, args.mqtt_passwd)
     rc = bridge.run()

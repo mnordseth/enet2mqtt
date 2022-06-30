@@ -8,6 +8,7 @@ ENV mqtt_pass=
 ENV enet_ip=
 ENV mqtt_ip=
 ENV mqtt_port=
+ENV uri_scheme=
 ENV verify_ssl_cert=
 
 RUN apt-get update && apt-get install --no-install-recommends -y gcc build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev libbz2-dev && apt-get install wget -y
