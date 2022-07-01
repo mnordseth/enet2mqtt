@@ -16,11 +16,13 @@ URL_VIZ="/jsonrpc/visualization"
 URL_COM="/jsonrpc/commissioning"
 
 class EnetClient:
-    def __init__(self, user, passwd, hostname):
+    def __init__(self, user, passwd, hostname, urischeme, sslverify):
         self.user = user
         self.passwd = passwd
         self.hostname = hostname
+        self.urischeme = urischeme
         self._session = requests.Session()
+        self._session.verify = sslverify.upper() == "TRUE"
         self._debug_requests = False
         self._api_counter = 1
         self._cookie=""
@@ -35,7 +37,7 @@ class EnetClient:
                "id":str(self._api_counter)
         }
         self._api_counter += 1
-        response = self._session.post("http://%s%s" % (self.hostname, url), json=req)
+        response = self._session.post("%s://%s%s" % (self.urischeme, self.hostname, url), json=req)
         if get_raw:
             return response
         if response.status_code >= 400:
@@ -106,7 +108,7 @@ class EnetClient:
         r = self.request(URL_MANAGEMENT, "userLoginDigest", response)
 
         # For some reason I don't get, this request has to be made for auth to work for following requests...
-        r = self._session.get("http://%s/wslclient.html?icp=6p1C8GeIi2FOOEfeA85a" % self.hostname)
+        r = self._session.get("%s://%s/wslclient.html?icp=6p1C8GeIi2FOOEfeA85a" % (self.urischeme, self.hostname))
 
 
     def get_links(self, deviceUIDs=[]):
