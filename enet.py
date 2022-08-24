@@ -8,6 +8,7 @@ import random
 import json
 import logging
 
+requests.packages.urllib3.disable_warnings()
 log = logging.getLogger(__name__)
 
 session = requests.Session()
@@ -219,8 +220,11 @@ known_actuators = ["DVT_DA1M",  # Jung 1 channel dimming actuator
                    "DVT_DA1R",  # 1 channel dimming actuator rail mount
                    "DVT_SJAR"]  # 8 channel switch actuator
 
-known_sensors = ['DVT_WS2BJF50CL', 
-                 'DVT_WS3BJF50', 
+known_sensors = ['DVT_TADO',
+                 'DVT_WS2BJF50',
+                 'DVT_WS2BJF50CL',
+                 'DVT_WS3BJF50',
+                 'DVT_WS4BJF50',
                  'DVT_US2M',
                  'DVT_WS1BG',
                  'DVT_SA1M',
@@ -229,7 +233,9 @@ known_sensors = ['DVT_WS2BJF50CL',
                  'DVT_WS3BJF50CL', 
                  'DVT_WS4BJF50CL', #
                  'DVT_BS1BP', # eNet motion detector
+                 'DVT_SF1S',  # eNet light sensor
                  'DVT_WS4BJ'] # eNet radio transmitter module 4-gang
+
 
 def Device(client, raw):
     device_type = raw["typeID"]
