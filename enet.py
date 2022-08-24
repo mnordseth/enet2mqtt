@@ -8,7 +8,6 @@ import random
 import json
 import logging
 
-requests.packages.urllib3.disable_warnings()
 log = logging.getLogger(__name__)
 
 session = requests.Session()
