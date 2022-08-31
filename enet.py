@@ -14,9 +14,16 @@ session = requests.Session()
 URL_MANAGEMENT="/jsonrpc/management"
 URL_VIZ="/jsonrpc/visualization"
 URL_COM="/jsonrpc/commissioning"
+URL_TELEGRAM=URL_COM+"/app_telegrams"
+URL_SCENE="/jsonrpc/visualization/app_scene"
+
+class AuthError(Exception):
+    pass
+
+
 
 class EnetClient:
-    def __init__(self, user, passwd, hostname, urischeme, sslverify):
+    def __init__(self, user, passwd, hostname, urischeme="http", sslverify="TRUE"):
         self.user = user
         self.passwd = passwd
         self.hostname = hostname
@@ -26,9 +33,23 @@ class EnetClient:
         self._debug_requests = False
         self._api_counter = 1
         self._cookie=""
+        self._last_telegram_ts={}
         self.devices = []
-        #self._cookie="1ahlme9ytcbm311qphlvofmmwz"
 
+
+    def auth_if_needed(func):
+        def auth_wrapper(self, *args, **kwargs):
+            try:
+                return func(self, *args, **kwargs)
+            except AuthError:
+                log.info("Trying to re-authenticate...")
+                self.simple_login()
+
+            return func(self, *args, **kwargs)
+        return auth_wrapper
+
+
+    @auth_if_needed
     def request(self, url, method, params=None, get_raw=False):
         
         req = {"jsonrpc":"2.0",
@@ -58,7 +79,11 @@ class EnetClient:
         json = response.json()
         if "error" in json:
             e = "-> %s %s returned error: %s" %(url, method, json["error"])
-            raise(Exception(e))
+            print(json["error"])
+            if json["error"]["code"] == -29998:
+                raise(AuthError)
+            else:
+                raise(Exception(e))
         else:
             if self._debug_requests:
                 print("-> %s %s returned: %s" % (url, method, json["result"]))
@@ -160,7 +185,7 @@ class EnetClient:
                   "filter":".+\\\\.(SCV1|SCV2|SNA|PSN)\\\\[(.|1.|2.|3.)\\\\]+"}
         result = self.request(URL_VIZ, "getDevicesWithParameterFilter", params)
         devices = result["devices"]
-        devices = [Device(self, dev) for dev in devices]
+        devices = [Device(self, dev) for dev in devices if dev]
         for device in devices:
             device.location = device_locations[device.uid]
         return devices
@@ -217,7 +242,10 @@ known_actuators = ["DVT_DA1M",  # Jung 1 channel dimming actuator
                    "DVT_SV1M",  # Jung 1 channel 1-10V dimming actuator
                    "DVT_DA4R",  # 4 channel dimming actuator rail mount
                    "DVT_DA1R",  # 1 channel dimming actuator rail mount
-                   "DVT_SJAR"]  # 8 channel switch actuator
+                   "DVT_SJAR",  # 8 channel switch actuator
+                   "DVT_SA2M"   # Gira 2-gang switching actuator https://katalog.gira.de/en/datenblatt.html?id=635918
+
+                   ]
 
 known_sensors = ['DVT_TADO',
                  'DVT_WS2BJF50',
@@ -229,6 +257,10 @@ known_sensors = ['DVT_TADO',
                  'DVT_SA1M',
                  'DVT_WS3BG',
                  'DVT_RPZS',
+                 'DVT_SJA1',
+                 'DVT_S2A1',
+                 'DVT_HS2',
+                 'DVT_HS4',
                  'DVT_WS3BJF50CL', 
                  'DVT_WS4BJF50CL', #
                  'DVT_BS1BP', # eNet motion detector
@@ -307,6 +339,13 @@ class Channel:
             type_id = output_func['currentValues'][0]['valueTypeID']
             value = output_func['currentValues'][0]['value']
             print(f"    odf: {odf} type: {type_id} value: {value}")
+            if type_id == "VT_SCALING_RANGE_0_100_DEF_0":
+                self.has_brightness = True
+
+    def _iterate_input_functions(self):
+        for idf, input_func in enumerate(self.channel["inputDeviceFunctions"]):
+            type_id = input_func['currentValues'][0]['valueTypeID']
+            print(f"    idf: {idf} type: {type_id}")
             if type_id == "VT_SCALING_RANGE_0_100_DEF_0":
                 self.has_brightness = True
 
