@@ -21,7 +21,6 @@ class AuthError(Exception):
     pass
 
 
-
 class EnetClient:
     def __init__(self, user, passwd, hostname, urischeme="http", sslverify="TRUE"):
         self.user = user
@@ -89,52 +88,13 @@ class EnetClient:
                 print("-> %s %s returned: %s" % (url, method, json["result"]))
         return json["result"]
 
-    def _calc_auth_response(self, challenge, cnonce=None):
-        if cnonce is None:
-            cnonce= "".join(random.choice(string.ascii_letters + string.digits) for i in range(40))
-
-        realm = challenge["realm"]
-        nonce = challenge["nonce"]
-        uri = challenge["uri"]
-
-        ha1 = "{}:{}:{}".format(user, realm, passwd)
-        ha1 = hashlib.sha1(ha1.encode()).hexdigest().upper()
-        ha2 = hashlib.sha1(("POST:%s" % uri).encode()).hexdigest().upper()
-        nc="00000001"
-
-        
-        response = "{}:{}:{}:{}:{}:{}".format(ha1, challenge["nonce"], nc, cnonce, "auth", ha2)
-        response = hashlib.sha1(response.encode()).hexdigest().upper()
-
-        params = {"userName":user,
-                   "uri":uri, 
-                   "qop":"auth",
-                   "cnonce":cnonce,
-                   "nc":"00000001",
-                   "response":response,
-                   "realm":realm,
-                   "nonce":nonce,
-                   "algorithm":"sha",
-                   "opaque":challenge["opaque"]
-        }
-        return params
-            
-
+  
     def simple_login(self):
         params = dict(userName=self.user,
                       userPassword=self.passwd)
         r = self.request(URL_MANAGEMENT, "userLogin", params)
         r = self.request(URL_MANAGEMENT, "setClientRole", dict(clientRole="CR_VISU"))
         
-    
-    def login(self):
-        challenge = self.request(URL_MANAGEMENT, "getDigestAuthentificationInfos").json()["result"]
-        response = self._calc_auth_response(challenge)
-        r = self.request(URL_MANAGEMENT, "userLoginDigest", response)
-
-        # For some reason I don't get, this request has to be made for auth to work for following requests...
-        r = self._session.get("%s://%s/wslclient.html?icp=6p1C8GeIi2FOOEfeA85a" % (self.urischeme, self.hostname))
-
 
     def get_links(self, deviceUIDs=[]):
         r = self.request(URL_MANAGEMENT, "setClientRole", dict(clientRole="CR_IBN"))

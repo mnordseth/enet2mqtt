@@ -9,6 +9,7 @@ ipython = "*"
 [packages]
 requests = "*"
 paho-mqtt = "*"
+3 = "*"
 
 [requires]
 python_version = "3.7"
