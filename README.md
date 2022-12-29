@@ -1,4 +1,8 @@
 [![Actions Status](https://github.com/Th0masDB/enet2mqtt/workflows/Docker%20Image%20CI/badge.svg)](https://github.com/Th0masDB/enet2mqtt/actions)
+
+# Not maintained
+Please note that this repository is not maintained. Please use the ([Home Assistant integration](https://github.com/mnordseth/enet-homeassistant)) insted, as it supports more enet actuators, scenes and buttons.
+
 # Enet2mqtt
 Python library for communicating with the Gira / Jung eNet Smart Home Server (https://www.enet-smarthome.com/), and a mqtt forwarder to integrate eNet Smart Home devices with Home Assistant.
 
